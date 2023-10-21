@@ -4,3 +4,4 @@ pygame==2.3.0
 matplotlib
 Pillow
 wandb
+torch
