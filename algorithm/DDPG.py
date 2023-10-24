@@ -18,6 +18,9 @@ class DDPG:
         self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.001)
         self.ddpg_q_optimizer = torch.optim.Adam(self.ddpg_q_net.parameters(), lr=0.001)
 
+        #self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.0005, weight_decay=1e-5)
+        #self.ddpg_q_optimizer = torch.optim.Adam(self.ddpg_q_net.parameters(), lr=0.0005, weight_decay=1e-5)
+
         # Define target networks
         self.target_policy_net = PolicyNetwork(obs_dim, act_dim, hidden_size)
         self.target_ddpg_q_net = DDPGQNetwork(obs_dim, act_dim, hidden_size)
@@ -25,12 +28,16 @@ class DDPG:
         # Initialize target network weights to match the original networks
         self.target_policy_net.load_state_dict(self.policy_net.state_dict())
         self.target_ddpg_q_net.load_state_dict(self.ddpg_q_net.state_dict())
+
+        # Initialize noise process for exploration
+        #self.noise = torch.tensor(0.1)
         
     def act(self, observation):
         """Choose an action based on the policy."""
         with torch.no_grad():
             action_probs = self.policy_net(torch.tensor(observation, dtype=torch.float32))
             action = action_probs.argmax().item()
+            #action += self.noise.normal_(0, 0.1).item()
         return action
     
     def store_experience(self, state, action, reward, next_state, done):
@@ -39,8 +46,9 @@ class DDPG:
     
     def update(self):
         """Perform DDPG learning update."""
+        policy_loss = None
         if len(self.replay_buffer) < self.replay_buffer.batch_size:
-            return
+            return policy_loss
         
         # Sample a batch of experiences
         states, actions, rewards, next_states, dones = self.replay_buffer.sample()
@@ -75,6 +83,8 @@ class DDPG:
         # Soft update of the target networks
         self.soft_update(self.policy_net, self.target_policy_net, tau=0.01)
         self.soft_update(self.ddpg_q_net, self.target_ddpg_q_net, tau=0.01)
+
+        return policy_loss
     
     @staticmethod
     def soft_update(local_model, target_model, tau=0.01):

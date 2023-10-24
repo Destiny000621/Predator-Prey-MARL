@@ -50,24 +50,13 @@ for episode in range(NUM_EPISODES):
         observations = next_observations
 
     # Log rewards and policy losses to wandb
-    log_dict = {"Episode Reward": sum(episode_rewards)}
-    if maddpg_losses:
-        log_dict["MADDPG Policy Loss (Predator_0)"] = maddpg_losses[0]
-        log_dict["MADDPG Policy Loss (Predator_1)"] = maddpg_losses[1]
-        log_dict["MADDPG Policy Loss (Predator_2)"] = maddpg_losses[2]
-        # ... add other adversaries' losses ...
-    if ddpg_loss is not None:
-        log_dict["DDPG Policy Loss (Prey_0)"] = ddpg_loss
-    wandb.log(log_dict)
-
-'''
     wandb.log({
         "Episode Reward": sum(episode_rewards),
-        "MADDPG Policy Loss (predator 0)": maddpg_losses[0] if maddpg_losses else None,
-        "MADDPG Policy Loss (predator 1)": maddpg_losses[1] if maddpg_losses else None,
-        "MADDPG Policy Loss (predator 2)": maddpg_losses[2] if maddpg_losses else None,
-        "DDPG Policy Loss (prey 0)": ddpg_loss
+        "MADDPG Policy Loss (Adversary 0)": maddpg_losses[0] if maddpg_losses and maddpg_losses[0] is not None else None,
+        "MADDPG Policy Loss (Adversary 1)": maddpg_losses[1] if maddpg_losses and maddpg_losses[1] is not None else None,
+        "MADDPG Policy Loss (Adversary 2)": maddpg_losses[2] if maddpg_losses and maddpg_losses[2] is not None else None,
+        "DDPG Policy Loss (Good Agent)": ddpg_loss
     })
-'''
+
 # Finish the wandb run
 wandb.finish()

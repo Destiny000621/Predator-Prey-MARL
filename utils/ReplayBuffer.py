@@ -8,14 +8,16 @@ Experience = namedtuple('Experience', ['state', 'action', 'reward', 'next_state'
 
 class ReplayBuffer:
     """Fixed-size buffer to store experience tuples."""
-    
+    # Define a named tuple to represent a single experience
+    Experience = namedtuple('Experience', ['state', 'action', 'reward', 'next_state', 'done'])
+
     def __init__(self, buffer_size, batch_size):
         self.memory = deque(maxlen=buffer_size)
         self.batch_size = batch_size
 
     def add(self, state, action, reward, next_state, done):
         """Add a new experience to memory."""
-        e = Experience(state, action, reward, next_state, done)
+        e = self.Experience(state, action, reward, next_state, done)
         self.memory.append(e)
 
     def sample(self):
