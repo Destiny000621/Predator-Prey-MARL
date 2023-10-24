@@ -3,9 +3,6 @@ import random
 import numpy as np
 import torch
 
-# Define a named tuple to represent a single experience
-Experience = namedtuple('Experience', ['state', 'action', 'reward', 'next_state', 'done'])
-
 class ReplayBuffer:
     """Fixed-size buffer to store experience tuples."""
     # Define a named tuple to represent a single experience
@@ -33,22 +30,3 @@ class ReplayBuffer:
     def __len__(self):
         """Return the current size of internal memory."""
         return len(self.memory)
-
-# Test the ReplayBuffer class
-buffer_size = 10000
-batch_size = 64
-replay_buffer = ReplayBuffer(buffer_size, batch_size)
-OBS_DIM = 16
-ACT_DIM = 5
-
-# Adding dummy data to test sampling
-for _ in range(100):
-    state = np.random.randn(OBS_DIM)
-    action = np.random.choice(ACT_DIM)
-    reward = np.random.randn()
-    next_state = np.random.randn(OBS_DIM)
-    done = np.random.choice([True, False])
-    replay_buffer.add(state, action, reward, next_state, done)
-
-sampled_data = replay_buffer.sample()
-sampled_data[0].shape, sampled_data[1].shape, sampled_data[2].shape, sampled_data[3].shape, sampled_data[4].shape

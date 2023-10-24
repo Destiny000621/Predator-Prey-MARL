@@ -18,9 +18,6 @@ class DDPG:
         self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.001)
         self.ddpg_q_optimizer = torch.optim.Adam(self.ddpg_q_net.parameters(), lr=0.001)
 
-        #self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.0005, weight_decay=1e-5)
-        #self.ddpg_q_optimizer = torch.optim.Adam(self.ddpg_q_net.parameters(), lr=0.0005, weight_decay=1e-5)
-
         # Define target networks
         self.target_policy_net = PolicyNetwork(obs_dim, act_dim, hidden_size)
         self.target_ddpg_q_net = DDPGQNetwork(obs_dim, act_dim, hidden_size)
@@ -28,16 +25,12 @@ class DDPG:
         # Initialize target network weights to match the original networks
         self.target_policy_net.load_state_dict(self.policy_net.state_dict())
         self.target_ddpg_q_net.load_state_dict(self.ddpg_q_net.state_dict())
-
-        # Initialize noise process for exploration
-        #self.noise = torch.tensor(0.1)
         
     def act(self, observation):
         """Choose an action based on the policy."""
         with torch.no_grad():
             action_probs = self.policy_net(torch.tensor(observation, dtype=torch.float32))
             action = action_probs.argmax().item()
-            #action += self.noise.normal_(0, 0.1).item()
         return action
     
     def store_experience(self, state, action, reward, next_state, done):
@@ -91,10 +84,3 @@ class DDPG:
         """Soft update model parameters: θ_target = τ*θ_local + (1 - τ)*θ_target"""
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
-
-# Instantiate the DDPG class for demonstration
-OBS_DIM = 14
-ACT_DIM = 5
-
-ddpg_agent = DDPG(obs_dim=OBS_DIM, act_dim=ACT_DIM, hidden_size=128)
-ddpg_agent

@@ -145,10 +145,3 @@ def maddpg_update(self):
 
 # Adjust the MADDPG class's update method
 setattr(MADDPG, "update", maddpg_update)
-
-# Instantiate the MADDPG class for demonstration
-OBS_DIM = 16
-ACT_DIM = 5
-num_predator = 3
-maddpg_agent = MADDPG(obs_dim=OBS_DIM, act_dim=ACT_DIM, num_predators=num_predator, hidden_size=128)
-maddpg_agent

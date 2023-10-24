@@ -1,7 +1,8 @@
 from collections import deque
 import random
 import torch
-# Replay Buffer
+
+# Replay Buffer for DDPG
 class ReplayBuffer_DDPG:
     def __init__(self, capacity, batch_size):
         self.capacity = capacity

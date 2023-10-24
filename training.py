@@ -15,9 +15,9 @@ maddpg_agent = MADDPG(obs_dim=16, act_dim=5, num_predators=3, hidden_size=128)
 ddpg_agent = DDPG(obs_dim=14, act_dim=5, hidden_size=128)
 
 # Initialize wandb
-wandb.init(project='multi_agent_training', name='maddpg_adversaries_ddpg_prey')
+wandb.init(project='MAPP_version1', name='maddpg_predator_ddpg_prey')
 
-NUM_EPISODES = 100
+NUM_EPISODES = 1000
 
 for episode in range(NUM_EPISODES):
     observations, _ = env.reset()

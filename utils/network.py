@@ -2,13 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# Constants
-OBS_DIM_Predator = 16
-OBS_DIM_Prey =14
-ACT_DIM = 5
-HIDDEN_SIZE = 128
-num_predators = 3
-
 # Define the policy network(MLP)
 class PolicyNetwork(nn.Module):
     def __init__(self, input_dim, output_dim, HIDDEN_SIZE):
@@ -50,10 +43,3 @@ class DDPGQNetwork(nn.Module):
         x = F.relu(self.fc2(x))
         return self.fc3(x)
 
-# Create instances of the networks for demonstration
-policy_net_predator = PolicyNetwork(OBS_DIM_Predator, ACT_DIM, HIDDEN_SIZE)
-policy_net_prey = PolicyNetwork(OBS_DIM_Prey, ACT_DIM, HIDDEN_SIZE)
-maddpg_q_net = MADDPGQNetwork(OBS_DIM_Predator, ACT_DIM, num_predators, HIDDEN_SIZE)
-ddpg_q_net = DDPGQNetwork(OBS_DIM_Prey, ACT_DIM, HIDDEN_SIZE)
-
-#print(policy_net_predator, policy_net_prey, maddpg_q_net, ddpg_q_net)
