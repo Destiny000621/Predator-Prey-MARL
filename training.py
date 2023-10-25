@@ -6,6 +6,7 @@ import numpy as np
 from algorithm.MADDPG import MADDPG
 from algorithm.DDPG import DDPG
 import wandb
+import time
 
 env = predator_prey.parallel_env(render_mode="rgb_array", max_cycles=25)
 observations, infos = env.reset()
@@ -15,9 +16,11 @@ maddpg_agent = MADDPG(obs_dim=16, act_dim=5, num_predators=3, hidden_size=128)
 ddpg_agent = DDPG(obs_dim=14, act_dim=5, hidden_size=128)
 
 # Initialize wandb
-wandb.init(project='MAPP_version1', name='maddpg_predator_ddpg_prey')
+t = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+wandb.init(project='MAPP_version0', name=t)
 
-NUM_EPISODES = 1000
+# Adjust the episode length
+NUM_EPISODES = 2000
 
 for episode in range(NUM_EPISODES):
     observations, _ = env.reset()
@@ -52,10 +55,10 @@ for episode in range(NUM_EPISODES):
     # Log rewards and policy losses to wandb
     wandb.log({
         "Episode Reward": sum(episode_rewards),
-        "MADDPG Policy Loss (Adversary 0)": maddpg_losses[0] if maddpg_losses and maddpg_losses[0] is not None else None,
-        "MADDPG Policy Loss (Adversary 1)": maddpg_losses[1] if maddpg_losses and maddpg_losses[1] is not None else None,
-        "MADDPG Policy Loss (Adversary 2)": maddpg_losses[2] if maddpg_losses and maddpg_losses[2] is not None else None,
-        "DDPG Policy Loss (Good Agent)": ddpg_loss
+        "MADDPG Policy Loss (Predator 0)": maddpg_losses[0] if maddpg_losses and maddpg_losses[0] is not None else None,
+        "MADDPG Policy Loss (Predator 1)": maddpg_losses[1] if maddpg_losses and maddpg_losses[1] is not None else None,
+        "MADDPG Policy Loss (Predator 2)": maddpg_losses[2] if maddpg_losses and maddpg_losses[2] is not None else None,
+        "DDPG Policy Loss (Prey 0)": ddpg_loss
     })
 
 # Finish the wandb run
