@@ -11,7 +11,7 @@ import time
 env = predator_prey.parallel_env(render_mode="rgb_array", max_cycles=25)
 observations, infos = env.reset()
 
-# Initialize MADDPG agent for adversaries and DDPG agent for the prey
+# Initialize MADDPG agent for predators and DDPG agent for the prey
 maddpg_agent = MADDPG(obs_dim=env.observation_space("predator_0").shape[0], act_dim=env.action_space("predator_0").n, num_predators = 3, hidden_size=128)
 ddpg_agent = DDPG(obs_dim=env.observation_space("prey_0").shape[0], act_dim=env.action_space("prey_0").n, hidden_size=128)
 

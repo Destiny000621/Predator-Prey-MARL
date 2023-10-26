@@ -10,7 +10,7 @@ class DDPG:
         self.act_dim = act_dim
         self.replay_buffer = ReplayBuffer_DDPG(buffer_size, batch_size)
         
-        # Define policy and Q-networks
+        # Define policy(actor) and Q-networks(critic)
         self.policy_net = PolicyNetwork(obs_dim, act_dim, hidden_size)
         self.ddpg_q_net = DDPGQNetwork(obs_dim, act_dim, hidden_size)
 

@@ -116,7 +116,7 @@ class Scenario(BaseScenario):
     def prey_agents(self, world):
         return [agent for agent in world.agents if not agent.predator]
 
-    # return all adversarial agents
+    # return all predators
     def predators(self, world):
         return [agent for agent in world.agents if agent.predator]
 

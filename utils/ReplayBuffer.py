@@ -3,6 +3,7 @@ import random
 import numpy as np
 import torch
 
+#Replay Buffer for MADDPG
 class ReplayBuffer:
     """Fixed-size buffer to store experience tuples."""
     # Define a named tuple to represent a single experience

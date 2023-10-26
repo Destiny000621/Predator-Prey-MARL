@@ -11,7 +11,7 @@ class MADDPG:
         self.act_dim = act_dim
         self.replay_buffer = ReplayBuffer(buffer_size, batch_size)
         
-        # Define policy and Q-networks for each predator
+        # Define policy(actor) and Q-networks(critic) for each predator
         self.predator_policy_nets = [PolicyNetwork(obs_dim, act_dim, hidden_size) for _ in range(num_predators)]
         self.predator_q_net = MADDPGQNetwork(obs_dim, act_dim, num_predators, hidden_size)
 
@@ -94,6 +94,7 @@ class MADDPG:
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
 
+# Adjust the MADDPG update method
 def maddpg_update(self):
     """Perform MADDPG learning update for predators and return policy losses for each."""
     policy_losses = [None, None, None]
