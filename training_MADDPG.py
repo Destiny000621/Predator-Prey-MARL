@@ -16,8 +16,8 @@ maddpg_agent = MADDPG(obs_dim=env.observation_space("predator_0").shape[0], act_
 ddpg_agent = DDPG(obs_dim=env.observation_space("prey_0").shape[0], act_dim=env.action_space("prey_0").n, hidden_size=128)
 
 # Initialize wandb
-t = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-wandb.init(project='MAPP_version0', name=t)
+#t = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+wandb.init(project='MAPP_version1', name='MADDPG-DDPG')
 
 # Adjust the episode length
 NUM_EPISODES = 2000
