@@ -6,7 +6,7 @@ from utils.network import PolicyNetwork, MADDPGQNetwork
 from utils.ReplayBuffer import ReplayBuffer
 
 class MADDPG:
-    def __init__(self, obs_dim, act_dim, num_predators, hidden_size=128, buffer_size=10000, batch_size=64):
+    def __init__(self, obs_dim, act_dim, num_predators, hidden_size, buffer_size=10000, batch_size=64):
         self.num_predators = num_predators
         self.act_dim = act_dim
         self.replay_buffer = ReplayBuffer(buffer_size, batch_size)
@@ -16,8 +16,8 @@ class MADDPG:
         self.predator_q_net = MADDPGQNetwork(obs_dim, act_dim, num_predators, hidden_size)
 
         # Define optimizers for each predator's policy network and the shared Q-network
-        self.predator_policy_optimizers = [torch.optim.Adam(net.parameters(), lr=0.001) for net in self.predator_policy_nets]
-        self.predator_q_optimizer = torch.optim.Adam(self.predator_q_net.parameters(), lr=0.001)
+        self.predator_policy_optimizers = [torch.optim.Adam(net.parameters(), lr=0.001, weight_decay=0.0001) for net in self.predator_policy_nets]
+        self.predator_q_optimizer = torch.optim.Adam(self.predator_q_net.parameters(), lr=0.001, weight_decay=0.0001)
 
         # Define target networks for each predator and the shared Q-network
         self.target_predator_policy_nets = [PolicyNetwork(obs_dim, act_dim, hidden_size) for _ in range(num_predators)]
@@ -33,8 +33,12 @@ class MADDPG:
         actions = []
         with torch.no_grad():
             for i, obs in enumerate(observations):
-                action_probs = self.predator_policy_nets[i](torch.tensor(obs, dtype=torch.float32))
-                action = action_probs.argmax().item()
+                #action_probs = self.predator_policy_nets[i](torch.tensor(obs, dtype=torch.float32))
+                #action = action_probs.argmax().item()
+                #actions.append(action)
+                action_logits = self.predator_policy_nets[i](torch.tensor(obs, dtype=torch.float32))
+                action_probs = F.softmax(action_logits, dim=-1) # Convert logits to probabilities
+                action = torch.multinomial(action_probs, 1).item() # Sample an action from the probability distribution
                 actions.append(action)
         return actions
     
@@ -67,6 +71,8 @@ class MADDPG:
         # Update Q-network
         self.predator_q_optimizer.zero_grad()
         q_loss.backward()
+        # Apply gradient clipping
+        torch.nn.utils.clip_grad_norm_(self.predator_q_net.parameters(), max_norm=1.0)
         self.predator_q_optimizer.step()
         
         # Update each predator's policy network
@@ -79,11 +85,14 @@ class MADDPG:
             # Update policy network
             optimizer.zero_grad()
             policy_loss.backward()
+            # Apply gradient clipping
+            torch.nn.utils.clip_grad_norm_(policy_net.parameters(), max_norm=1.0)
             optimizer.step()
         
         # Soft update of the target networks
         for policy_net, target_policy_net in zip(self.predator_policy_nets, self.target_predator_policy_nets):
             self.soft_update(policy_net, target_policy_net, tau=0.01)
+
         self.soft_update(self.predator_q_net, self.target_predator_q_net, tau=0.01)
 
         return policy_loss
@@ -120,6 +129,8 @@ def maddpg_update(self):
     # Update Q-network
     self.predator_q_optimizer.zero_grad()
     q_loss.backward()
+    # Apply gradient clipping
+    torch.nn.utils.clip_grad_norm_(self.predator_q_net.parameters(), max_norm=1.0)
     self.predator_q_optimizer.step()
     
     # Update each predator's policy network
@@ -135,12 +146,15 @@ def maddpg_update(self):
         # Update policy network
         optimizer.zero_grad()
         loss.backward()
+        # Apply gradient clipping
+        torch.nn.utils.clip_grad_norm_(policy_net.parameters(), max_norm=1.0)
         optimizer.step()
     
     # Soft update of the target networks
     for policy_net, target_policy_net in zip(self.predator_policy_nets, self.target_predator_policy_nets):
-        self.soft_update(policy_net, target_policy_net, tau=0.01)
-    self.soft_update(self.predator_q_net, self.target_predator_q_net, tau=0.01)
+        self.soft_update(policy_net, target_policy_net, tau=0.005)
+        
+    self.soft_update(self.predator_q_net, self.target_predator_q_net, tau=0.005)
 
     return policy_losses
 

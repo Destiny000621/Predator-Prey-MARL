@@ -17,8 +17,8 @@ class DDPG_1:
         self.ddpg_q_net = DDPGQNetwork(obs_dim, act_dim, hidden_size)
 
         # Define optimizers for policy network and Q-network
-        self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.001)
-        self.ddpg_q_optimizer = torch.optim.Adam(self.ddpg_q_net.parameters(), lr=0.001)
+        self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.001, weight_decay=0.0001)
+        self.ddpg_q_optimizer = torch.optim.Adam(self.ddpg_q_net.parameters(), lr=0.001, weight_decay=0.0001)
         # self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.0005, weight_decay=1e-5)
         # self.ddpg_q_optimizer = torch.optim.Adam(self.ddpg_q_net.parameters(), lr=0.0005, weight_decay=1e-5)
 
