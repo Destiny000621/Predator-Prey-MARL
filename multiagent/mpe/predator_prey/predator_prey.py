@@ -146,6 +146,7 @@ class Scenario(BaseScenario):
                 if self.is_collision(a, agent):
                     rew -= 10
 
+        '''
         # agents are penalized for exiting the screen, so that they can be caught by the predators
         def bound(x):
             if x < 0.9:
@@ -157,7 +158,7 @@ class Scenario(BaseScenario):
         for p in range(world.dim_p):
             x = abs(agent.state.p_pos[p])
             rew -= bound(x)
-
+        '''
         return rew
 
     def predator_reward(self, agent, world):
@@ -179,6 +180,7 @@ class Scenario(BaseScenario):
                 for adv in predators:
                     if self.is_collision(ag, adv):
                         rew += 10
+        '''
         def bound(x):
             if x < 0.9:
                 return 0
@@ -189,6 +191,7 @@ class Scenario(BaseScenario):
         for p in range(world.dim_p):
             x = abs(agent.state.p_pos[p])
             rew -= bound(x)
+        '''
 
         return rew
 
