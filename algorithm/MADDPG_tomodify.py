@@ -16,8 +16,8 @@ class MADDPG_1:
         self.predator_q_net = MADDPGQNetwork(obs_dim, act_dim, num_predators, hidden_size)
 
         # Define optimizers for each predator's policy network and the shared Q-network
-        self.predator_policy_optimizers = [torch.optim.Adam(net.parameters(), lr=0.001) for net in self.predator_policy_nets]
-        self.predator_q_optimizer = torch.optim.Adam(self.predator_q_net.parameters(), lr=0.001)
+        self.predator_policy_optimizers = [torch.optim.Adam(net.parameters(), lr=0.0005, weight_decay=1e-5) for net in self.predator_policy_nets]
+        self.predator_q_optimizer = torch.optim.Adam(self.predator_q_net.parameters(), lr=0.0005, weight_decay=1e-5)
 
         # Define target networks for each predator and the shared Q-network
         self.target_predator_policy_nets = [PolicyNetwork(obs_dim, act_dim, hidden_size) for _ in range(num_predators)]
@@ -71,6 +71,8 @@ class MADDPG_1:
         # Update Q-network
         self.predator_q_optimizer.zero_grad()
         q_loss.backward()
+        # Apply gradient clipping
+        torch.nn.utils.clip_grad_norm_(self.predator_q_net.parameters(), max_norm=1.0)
         self.predator_q_optimizer.step()
         
         # Update each predator's policy network
@@ -124,6 +126,8 @@ def maddpg_update(self):
     # Update Q-network
     self.predator_q_optimizer.zero_grad()
     q_loss.backward()
+    # Apply gradient clipping
+    torch.nn.utils.clip_grad_norm_(self.predator_q_net.parameters(), max_norm=1.0)
     self.predator_q_optimizer.step()
     
     # Update each predator's policy network
