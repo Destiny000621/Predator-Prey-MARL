@@ -19,7 +19,7 @@ ddpg_agent = DDPG(obs_dim=env.observation_space("prey_0").shape[0], act_dim=env.
 
 # Initialize wandb
 #t = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-wandb.init(project='MAPP_version1', name='DDPG-DDPG-softmax')
+wandb.init(project='MAPP_version1', name='DDPG-DDPG')
 
 # Define the episode length
 NUM_EPISODES = 2000
