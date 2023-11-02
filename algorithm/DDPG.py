@@ -15,8 +15,8 @@ class DDPG:
         self.ddpg_q_net = DDPGQNetwork(obs_dim, act_dim, hidden_size)
 
         # Define optimizers for policy network and Q-network
-        self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.001)
-        self.ddpg_q_optimizer = torch.optim.Adam(self.ddpg_q_net.parameters(), lr=0.001)
+        self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.001, weight_decay=0.0001)
+        self.ddpg_q_optimizer = torch.optim.Adam(self.ddpg_q_net.parameters(), lr=0.001, weight_decay=0.0001)
 
         # Define target networks
         self.target_policy_net = PolicyNetwork(obs_dim, act_dim, hidden_size)
@@ -29,8 +29,11 @@ class DDPG:
     def act(self, observation):
         """Choose an action based on the policy."""
         with torch.no_grad():
-            action_probs = self.policy_net(torch.tensor(observation, dtype=torch.float32))
-            action = action_probs.argmax().item()
+            #action_probs = self.policy_net(torch.tensor(observation, dtype=torch.float32))
+            #action = action_probs.argmax().item()
+            action_logits = self.policy_net(torch.tensor(observation, dtype=torch.float32))
+            action_probs = F.softmax(action_logits, dim=-1) # Convert logits to probabilities
+            action = torch.multinomial(action_probs, 1).item() # Sample an action from the probability distribution
         return action
     
     def store_experience(self, state, action, reward, next_state, done):
