@@ -16,7 +16,7 @@ ddpg_agent = DDPG(obs_dim=env.observation_space("prey_0").shape[0], act_dim=env.
 wandb.init(project='MAPP_version1', name='MADDPG-DDPG')
 
 # Define the episode length
-NUM_EPISODES = 2000
+NUM_EPISODES = 3000
 
 # Define a window size for averaging episode rewards
 WINDOW_SIZE = 200

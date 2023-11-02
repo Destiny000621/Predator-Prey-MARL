@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from multiagent.mpe.predator_prey import predator_prey
 from multiagent.mpe._mpe_utils.simple_env import SimpleEnv
 import numpy as np
-from algorithm.DDPG import DDPG
+from algorithm.DDPG_tomodify import DDPG_1
 import wandb
 import time
 from collections import deque
@@ -12,17 +12,17 @@ env = predator_prey.parallel_env(render_mode="rgb_array", max_cycles=25)
 observations, infos = env.reset()
 
 # Initialize DDPG agent for predators and the prey
-ddpg_agent_predator_0 = DDPG(obs_dim=env.observation_space("predator_0").shape[0], act_dim=env.action_space("predator_0").n, hidden_size=128)
-ddpg_agent_predator_1 = DDPG(obs_dim=env.observation_space("predator_1").shape[0], act_dim=env.action_space("predator_1").n, hidden_size=128)
-ddpg_agent_predator_2 = DDPG(obs_dim=env.observation_space("predator_2").shape[0], act_dim=env.action_space("predator_2").n, hidden_size=128)
-ddpg_agent = DDPG(obs_dim=env.observation_space("prey_0").shape[0], act_dim=env.action_space("prey_0").n, hidden_size=128)
+ddpg_agent_predator_0 = DDPG_1(obs_dim=env.observation_space("predator_0").shape[0], act_dim=env.action_space("predator_0").n, hidden_size=128)
+ddpg_agent_predator_1 = DDPG_1(obs_dim=env.observation_space("predator_1").shape[0], act_dim=env.action_space("predator_1").n, hidden_size=128)
+ddpg_agent_predator_2 = DDPG_1(obs_dim=env.observation_space("predator_2").shape[0], act_dim=env.action_space("predator_2").n, hidden_size=128)
+ddpg_agent = DDPG_1(obs_dim=env.observation_space("prey_0").shape[0], act_dim=env.action_space("prey_0").n, hidden_size=128)
 
 # Initialize wandb
 #t = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 wandb.init(project='MAPP_version1', name='DDPG-DDPG-softmax')
 
 # Define the episode length
-NUM_EPISODES = 3000
+NUM_EPISODES = 2000
 
 # Define a window size for averaging episode rewards
 WINDOW_SIZE = 200
