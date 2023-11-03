@@ -1,5 +1,5 @@
 import wandb
-from DQN import DQNAgent # Import your DQN agent here
+from baseline.DQN import DQNAgent
 import time
 from collections import deque
 from multiagent.mpe.predator_prey import predator_prey

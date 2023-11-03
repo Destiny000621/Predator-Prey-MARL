@@ -7,11 +7,11 @@ import random
 from collections import namedtuple, deque
 
 # Hyperparameters
-LR = 1e-4                 # learning rate
-BUFFER_SIZE = int(1e5)    # replay buffer size
+LR = 0.0001                 # learning rate
+BUFFER_SIZE = 100000    # replay buffer size
 BATCH_SIZE = 64           # minibatch size
 GAMMA = 0.99              # discount factor
-TAU = 1e-3                # for soft update of target parameters
+TAU = 0.001                # for soft update of target parameters
 UPDATE_EVERY = 4          # how often to update the network
 
 # Device
