@@ -63,7 +63,7 @@ class aec_to_parallel_wrapper(ParallelEnv[AgentID, ObsType, ActionType]):
         return observations, infos
 
     def step(self, actions):
-        rewards = defaultdict(int)
+        rewards = defaultdict(float)
         terminations = {}
         truncations = {}
         infos = {}

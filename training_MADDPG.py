@@ -16,10 +16,10 @@ ddpg_agent = DDPG(obs_dim=env.observation_space("prey_0").shape[0], act_dim=env.
 wandb.init(project='MAPP_version1', name='MADDPG-DDPG')
 
 # Define the episode length
-NUM_EPISODES = 2000
+NUM_EPISODES = 15000
 
 # Define a window size for averaging episode rewards
-WINDOW_SIZE = 500
+WINDOW_SIZE = 1000
 episode_rewards_window = deque(maxlen=WINDOW_SIZE)
 
 for episode in range(NUM_EPISODES):
@@ -52,6 +52,9 @@ for episode in range(NUM_EPISODES):
         episode_rewards.append(sum(rewards.values()))
         observations = next_observations
 
+    # Calculate the mean reward for each episode by averaging over all the steps
+    mean_one_episode_reward = sum(episode_rewards)/len(episode_rewards)
+
     # Append the episode's cumulative reward to the window
     episode_rewards_window.append(sum(episode_rewards))
 
@@ -61,6 +64,7 @@ for episode in range(NUM_EPISODES):
     # Log rewards and policy losses to wandb
     wandb.log({
         "Episode Reward": sum(episode_rewards),
+        "Mean Episode Reward": mean_one_episode_reward,
         "Mean Episode Reward (Last {} episodes)".format(WINDOW_SIZE): mean_episode_reward,
         "MADDPG Policy Loss (Predator 0)": maddpg_losses[0] if maddpg_losses and maddpg_losses[0] is not None else None,
         "MADDPG Policy Loss (Predator 1)": maddpg_losses[1] if maddpg_losses and maddpg_losses[1] is not None else None,
