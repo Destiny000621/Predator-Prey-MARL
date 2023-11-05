@@ -6,7 +6,7 @@ from utils.network import PolicyNetwork, MADDPGQNetwork
 from utils.ReplayBuffer import ReplayBuffer
 
 class MADDPG:
-    def __init__(self, obs_dim, act_dim, num_predators, hidden_size, buffer_size=10000, batch_size=64):
+    def __init__(self, obs_dim, act_dim, num_predators, hidden_size, buffer_size=100000, batch_size=64):
         self.num_predators = num_predators
         self.act_dim = act_dim
         self.replay_buffer = ReplayBuffer(buffer_size, batch_size)

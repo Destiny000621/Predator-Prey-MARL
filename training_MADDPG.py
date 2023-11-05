@@ -3,6 +3,8 @@ from algorithm.MADDPG import MADDPG
 from algorithm.DDPG import DDPG
 import wandb
 from collections import deque
+from utils.save_model import save_maddpg, save_ddpg
+import os
 
 env = predator_prey.parallel_env(render_mode="rgb_array", max_cycles=25)
 observations, infos = env.reset()
@@ -12,7 +14,6 @@ maddpg_agent = MADDPG(obs_dim=env.observation_space("predator_0").shape[0], act_
 ddpg_agent = DDPG(obs_dim=env.observation_space("prey_0").shape[0], act_dim=env.action_space("prey_0").n, hidden_size=128)
 
 # Initialize wandb
-#t = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 wandb.init(project='MAPP_version1', name='MADDPG-DDPG')
 
 # Define the episode length
@@ -21,6 +22,11 @@ NUM_EPISODES = 15000
 # Define a window size for averaging episode rewards
 WINDOW_SIZE = 1000
 episode_rewards_window = deque(maxlen=WINDOW_SIZE)
+
+# Define the path where you want to save the models
+save_dir = 'MADDPG_DDPG_models'  # Make sure this directory exists or create it
+if not os.path.exists(save_dir):
+    os.makedirs(save_dir)
 
 for episode in range(NUM_EPISODES):
     observations, _ = env.reset()
@@ -71,6 +77,11 @@ for episode in range(NUM_EPISODES):
         "MADDPG Policy Loss (Predator 2)": maddpg_losses[2] if maddpg_losses and maddpg_losses[2] is not None else None,
         "DDPG Policy Loss (Prey 0)": ddpg_loss
     })
+
+    # Save the models in the last episode
+    if episode == NUM_EPISODES - 1:
+        save_maddpg(maddpg_agent, save_dir)
+        save_ddpg(ddpg_agent, 'ddpg_agent', save_dir)
 
 # Finish the wandb run
 wandb.finish()
