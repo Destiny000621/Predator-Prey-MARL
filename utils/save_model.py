@@ -56,3 +56,20 @@ def save_dqn(dqn_agent, agent_name, directory):
     torch.save(dqn_agent.qnetwork_local.state_dict(), local_path)
     torch.save(dqn_agent.qnetwork_target.state_dict(), target_path)
 
+
+def save_iac(iac_agent, agent_name, directory):
+    """
+    Saves the IAC agent's network.
+    """
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    actor_filename = f"{agent_name}_actor_net.pth"
+    critic_filename = f"{agent_name}_critic_net.pth"
+
+    actor_path = os.path.join(directory, actor_filename)
+    critic_path = os.path.join(directory, critic_filename)
+
+    torch.save(iac_agent.actor_net.state_dict(), actor_path)
+    torch.save(iac_agent.critic_net.state_dict(), critic_path)
+
