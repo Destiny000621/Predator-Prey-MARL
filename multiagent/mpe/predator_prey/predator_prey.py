@@ -121,7 +121,6 @@ class Scenario(BaseScenario):
         return [agent for agent in world.agents if agent.predator]
 
     def reward(self, agent, world):
-        # Agents are rewarded based on minimum agent distance to each landmark
         main_reward = (
             self.predator_reward(agent, world)
             if agent.predator
@@ -138,7 +137,7 @@ class Scenario(BaseScenario):
             shape
         ):  # reward can optionally be shaped (increased reward for increased distance from predators)
             for adv in predators:
-                rew += 0.1 * np.sqrt(
+                rew += 0.2 * np.sqrt(
                     np.sum(np.square(agent.state.p_pos - adv.state.p_pos))
                 )
         if agent.collide:
@@ -171,7 +170,7 @@ class Scenario(BaseScenario):
             shape
         ):  # reward can optionally be shaped (decreased reward for increased distance from agents)
             for adv in predators:
-                rew -= 0.1 * min(
+                rew -= 0.2 * min(
                     np.sqrt(np.sum(np.square(a.state.p_pos - adv.state.p_pos)))
                     for a in agents
                 )

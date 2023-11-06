@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 # Constants
-HIDDEN_SIZE = 64
+HIDDEN_SIZE = 128
 
 class Actor(nn.Module):
     def __init__(self, input_dim, output_dim, seed, HIDDEN_SIZE):

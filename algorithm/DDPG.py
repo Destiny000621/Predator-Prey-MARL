@@ -67,6 +67,8 @@ class DDPG:
         # Update Q-network
         self.ddpg_q_optimizer.zero_grad()
         q_loss.backward()
+        # Apply gradient clipping
+        torch.nn.utils.clip_grad_norm_(self.ddpg_q_net.parameters(), max_norm=1.0)
         self.ddpg_q_optimizer.step()
         
         # Compute policy loss
@@ -76,6 +78,8 @@ class DDPG:
         # Update policy network
         self.policy_optimizer.zero_grad()
         policy_loss.backward()
+        # Apply gradient clipping
+        torch.nn.utils.clip_grad_norm_(self.policy_net.parameters(), max_norm=1.0)
         self.policy_optimizer.step()
         
         # Soft update of the target networks

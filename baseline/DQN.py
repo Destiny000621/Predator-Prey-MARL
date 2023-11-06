@@ -12,8 +12,8 @@ BUFFER_SIZE = 100000    # replay buffer size
 BATCH_SIZE = 64           # minibatch size
 GAMMA = 0.99              # discount factor
 TAU = 0.001                # for soft update of target parameters
-UPDATE_EVERY = 4          # how often to update the network
-HIDDEN_SIZE = 64
+UPDATE_EVERY = 5          # how often to update the network
+HIDDEN_SIZE = 128         # hidden layer size
 
 # Device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -60,13 +60,14 @@ class ReplayBuffer_DQN:
         return (states, actions, rewards, next_states, dones)
 
 class DQNAgent:
-    def __init__(self, state_size, action_size, seed):
+    def __init__(self, state_size, action_size, seed, hidden_size=HIDDEN_SIZE):
         self.state_size = state_size
         self.action_size = action_size
-        self.seed = random.seed(seed)
+        self.seed = seed
+        self.hidden_size = hidden_size
         
-        self.qnetwork_local = QNetwork(state_size, action_size, seed).to(device)
-        self.qnetwork_target = QNetwork(state_size, action_size, seed).to(device)
+        self.qnetwork_local = QNetwork(state_size, action_size, seed, hidden_size).to(device)
+        self.qnetwork_target = QNetwork(state_size, action_size, seed, hidden_size).to(device)
         self.optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=LR)
         
         self.memory = ReplayBuffer_DQN(action_size, BUFFER_SIZE, BATCH_SIZE, seed, capacity=10000)
