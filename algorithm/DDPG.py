@@ -6,21 +6,23 @@ from utils.network import PolicyNetwork, DDPGQNetwork
 from utils.ReplayBuffer_DDPG import ReplayBuffer_DDPG
 
 class DDPG:
-    def __init__(self, obs_dim, act_dim, hidden_size=128, buffer_size=10000, batch_size=64):
+    def __init__(self, obs_dim, act_dim, hidden_size, seed, buffer_size=10000, batch_size=64):
         self.act_dim = act_dim
+        self.seed = seed
+        self.hidden_size = hidden_size
         self.replay_buffer = ReplayBuffer_DDPG(buffer_size, batch_size)
         
         # Define policy(actor) and Q-networks(critic)
-        self.policy_net = PolicyNetwork(obs_dim, act_dim, hidden_size)
-        self.ddpg_q_net = DDPGQNetwork(obs_dim, act_dim, hidden_size)
+        self.policy_net = PolicyNetwork(obs_dim, act_dim, seed, hidden_size)
+        self.ddpg_q_net = DDPGQNetwork(obs_dim, act_dim, seed, hidden_size)
 
         # Define optimizers for policy network and Q-network
-        self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.001, weight_decay=0.0001)
-        self.ddpg_q_optimizer = torch.optim.Adam(self.ddpg_q_net.parameters(), lr=0.001, weight_decay=0.0001)
+        self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.002, weight_decay=0.0001)
+        self.ddpg_q_optimizer = torch.optim.Adam(self.ddpg_q_net.parameters(), lr=0.002, weight_decay=0.0001)
 
         # Define target networks
-        self.target_policy_net = PolicyNetwork(obs_dim, act_dim, hidden_size)
-        self.target_ddpg_q_net = DDPGQNetwork(obs_dim, act_dim, hidden_size)
+        self.target_policy_net = PolicyNetwork(obs_dim, act_dim, seed, hidden_size)
+        self.target_ddpg_q_net = DDPGQNetwork(obs_dim, act_dim, seed, hidden_size)
 
         # Initialize target network weights to match the original networks
         self.target_policy_net.load_state_dict(self.policy_net.state_dict())

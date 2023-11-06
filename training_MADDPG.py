@@ -10,14 +10,14 @@ env = predator_prey.parallel_env(render_mode="rgb_array", max_cycles=25)
 observations, infos = env.reset()
 
 # Initialize MADDPG agent for predators and DDPG agent for the prey
-maddpg_agent = MADDPG(obs_dim=env.observation_space("predator_0").shape[0], act_dim=env.action_space("predator_0").n, num_predators = 3, hidden_size=128)
-ddpg_agent = DDPG(obs_dim=env.observation_space("prey_0").shape[0], act_dim=env.action_space("prey_0").n, hidden_size=128)
+maddpg_agent = MADDPG(obs_dim=env.observation_space("predator_0").shape[0], act_dim=env.action_space("predator_0").n, num_predators = 3, hidden_size=128, seed=10)
+ddpg_agent = DDPG(obs_dim=env.observation_space("prey_0").shape[0], act_dim=env.action_space("prey_0").n, hidden_size=128, seed=20)
 
 # Initialize wandb
 wandb.init(project='MAPP_version1', name='MADDPG-DDPG')
 
 # Define the episode length
-NUM_EPISODES = 15000
+NUM_EPISODES = 100
 
 # Define a window size for averaging episode rewards
 WINDOW_SIZE = 1000

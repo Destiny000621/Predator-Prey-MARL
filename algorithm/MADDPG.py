@@ -6,22 +6,24 @@ from utils.network import PolicyNetwork, MADDPGQNetwork
 from utils.ReplayBuffer import ReplayBuffer
 
 class MADDPG:
-    def __init__(self, obs_dim, act_dim, num_predators, hidden_size, buffer_size=100000, batch_size=64):
+    def __init__(self, obs_dim, act_dim, num_predators, hidden_size, seed, buffer_size=100000, batch_size=64):
         self.num_predators = num_predators
         self.act_dim = act_dim
+        self.seed = seed
+        self.hidden_size = hidden_size
         self.replay_buffer = ReplayBuffer(buffer_size, batch_size)
         
         # Define policy(actor) and Q-networks(critic) for each predator
-        self.predator_policy_nets = [PolicyNetwork(obs_dim, act_dim, hidden_size) for _ in range(num_predators)]
-        self.predator_q_net = MADDPGQNetwork(obs_dim, act_dim, num_predators, hidden_size)
+        self.predator_policy_nets = [PolicyNetwork(obs_dim, act_dim, seed, hidden_size) for _ in range(num_predators)]
+        self.predator_q_net = MADDPGQNetwork(obs_dim, act_dim, num_predators, seed, hidden_size)
 
         # Define optimizers for each predator's policy network and the shared Q-network
         self.predator_policy_optimizers = [torch.optim.Adam(net.parameters(), lr=0.001, weight_decay=0.0001) for net in self.predator_policy_nets]
         self.predator_q_optimizer = torch.optim.Adam(self.predator_q_net.parameters(), lr=0.001, weight_decay=0.0001)
 
         # Define target networks for each predator and the shared Q-network
-        self.target_predator_policy_nets = [PolicyNetwork(obs_dim, act_dim, hidden_size) for _ in range(num_predators)]
-        self.target_predator_q_net = MADDPGQNetwork(obs_dim, act_dim, num_predators, hidden_size)
+        self.target_predator_policy_nets = [PolicyNetwork(obs_dim, act_dim, seed, hidden_size) for _ in range(num_predators)]
+        self.target_predator_q_net = MADDPGQNetwork(obs_dim, act_dim, num_predators, seed, hidden_size)
 
         # Initialize target network weights to match the original networks
         for i in range(num_predators):

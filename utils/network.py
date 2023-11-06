@@ -11,8 +11,9 @@ NUM_PREDATOR = 3
 
 # Define the policy network(actor)
 class PolicyNetwork(nn.Module):
-    def __init__(self, input_dim, output_dim, HIDDEN_SIZE):
+    def __init__(self, input_dim, output_dim, seed, HIDDEN_SIZE):
         super(PolicyNetwork, self).__init__()
+        self.seed = torch.manual_seed(seed)
         self.fc1 = nn.Linear(input_dim, HIDDEN_SIZE)
         self.fc2 = nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE)
         self.fc3 = nn.Linear(HIDDEN_SIZE, output_dim)
@@ -24,8 +25,9 @@ class PolicyNetwork(nn.Module):
 
 # Define the Q-network(critic) for MADDPG
 class MADDPGQNetwork(nn.Module):
-    def __init__(self, obs_dim, act_dim, num_agents, HIDDEN_SIZE):
+    def __init__(self, obs_dim, act_dim, num_agents, seed, HIDDEN_SIZE):
         super(MADDPGQNetwork, self).__init__()
+        self.seed = torch.manual_seed(seed)
         self.fc1 = nn.Linear(obs_dim * num_agents + act_dim * num_agents, HIDDEN_SIZE)
         self.fc2 = nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE)
         self.fc3 = nn.Linear(HIDDEN_SIZE, 1)  # Outputs a single Q-value
@@ -38,8 +40,9 @@ class MADDPGQNetwork(nn.Module):
 
 # Define the Q-network(critic) for DDPG
 class DDPGQNetwork(nn.Module):
-    def __init__(self, obs_dim, act_dim, HIDDEN_SIZE):
+    def __init__(self, obs_dim, act_dim, seed, HIDDEN_SIZE):
         super(DDPGQNetwork, self).__init__()
+        self.seed = torch.manual_seed(seed)
         self.fc1 = nn.Linear(obs_dim + act_dim, HIDDEN_SIZE)
         self.fc2 = nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE)
         self.fc3 = nn.Linear(HIDDEN_SIZE, 1)  # Outputs a single Q-value
