@@ -13,20 +13,21 @@ BATCH_SIZE = 64           # minibatch size
 GAMMA = 0.99              # discount factor
 TAU = 0.001                # for soft update of target parameters
 UPDATE_EVERY = 4          # how often to update the network
+HIDDEN_SIZE = 64
 
 # Device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class QNetwork(nn.Module):
-    def __init__(self, state_size, action_size, seed, fc1_units=64, fc2_units=64):
+    def __init__(self, input_dim, output_dim, seed, HIDDEN_SIZE):
         super(QNetwork, self).__init__()
         self.seed = torch.manual_seed(seed)
-        self.fc1 = nn.Linear(state_size, fc1_units)
-        self.fc2 = nn.Linear(fc1_units, fc2_units)
-        self.fc3 = nn.Linear(fc2_units, action_size)
+        self.fc1 = nn.Linear(input_dim, HIDDEN_SIZE)
+        self.fc2 = nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE)
+        self.fc3 = nn.Linear(HIDDEN_SIZE, output_dim)
 
-    def forward(self, state):
-        x = F.relu(self.fc1(state))
+    def forward(self, x):
+        x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         return self.fc3(x)
 
