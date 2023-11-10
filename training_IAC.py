@@ -17,12 +17,8 @@ iac_agent_prey_0 = IACAgent(state_size=env.observation_space("prey_0").shape[0],
 # Initialize wandb
 wandb.init(project='MAPP_version1', name='IAC')
 
-# Define the number of episodes and epsilon for exploration
+# Define the episode length
 NUM_EPISODES = 15000
-EPS_START = 1.0
-EPS_END = 0.001
-EPS_DECAY = 0.99
-eps = EPS_START
 
 # Define a window for averaging episode rewards
 WINDOW_SIZE = 1000

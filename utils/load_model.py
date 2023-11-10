@@ -23,6 +23,25 @@ def load_dqn(dqn_agent, agent_name, directory):
     else:
         print("Model files not found.")
 
+
+def load_iac(iac_agent, agent_name, directory):
+    """
+    Loads the IAC agent's network from saved state dictionaries.
+    """
+    actor_filename = f"{agent_name}_actor_network.pth"
+    critic_filename = f"{agent_name}_critic_network.pth"
+    actor_path = os.path.join(directory, actor_filename)
+    critic_path = os.path.join(directory, critic_filename)
+
+    if os.path.isfile(actor_path) and os.path.isfile(critic_path):
+        iac_agent.actor_network.load_state_dict(torch.load(actor_path))
+        iac_agent.critic_network.load_state_dict(torch.load(critic_path))
+        print(f"Actor model loaded: {actor_path}")
+        print(f"Critic model loaded: {critic_path}")
+
+    else:
+        print("Model files not found.")
+
 def load_ddpg(ddpg_agent, agent_name, directory):
     """
     Loads the DDPG agent's actor (policy) and critic networks from saved state dictionaries.
