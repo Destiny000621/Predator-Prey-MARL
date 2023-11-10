@@ -5,12 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "training",
+            "name": "training_MADDPG",
             "type": "python",
             "request": "launch",
-            "program": "training.py",
+            "program": "training_MADDPG.py",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+
+            "env":{
+                "CUDA_VISIBLE_DEVICES": "3",
+                "WANDB_API_KEY": "6ffe1e558bf04c0d3b36076f7839f4b953e8f3b6",
+            }
         }
     ]
 }
