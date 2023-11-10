@@ -18,7 +18,7 @@ dqn_agent_prey_0 = DQNAgent(state_size=env.observation_space("prey_0").shape[0],
 wandb.init(project='MAPP_version1', name='DQN')
 
 # Define the number of episodes and epsilon for exploration
-NUM_EPISODES = 100
+NUM_EPISODES = 15000
 EPS_START = 1.0
 EPS_END = 0.001
 EPS_DECAY = 0.99
@@ -88,7 +88,6 @@ for episode in range(NUM_EPISODES):
         "Episode Reward": sum(episode_rewards),
         "Mean Episode Reward": mean_one_episode_reward,
         "Mean Episode Reward (Last {} episodes)".format(WINDOW_SIZE): mean_episode_reward,
-        #"Epsilon": eps
     })
     # Save the models in the last episode
     if episode == NUM_EPISODES - 1:

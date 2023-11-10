@@ -1,9 +1,10 @@
 import torch
 import torch.nn.functional as F
-from collections import deque
-import random
 from utils.network import PolicyNetwork, DDPGQNetwork
 from utils.ReplayBuffer_DDPG import ReplayBuffer_DDPG
+
+# Device
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class DDPG:
     def __init__(self, obs_dim, act_dim, hidden_size, seed, buffer_size=10000, batch_size=64):
@@ -13,8 +14,8 @@ class DDPG:
         self.replay_buffer = ReplayBuffer_DDPG(buffer_size, batch_size)
         
         # Define policy(actor) and Q-networks(critic)
-        self.policy_net = PolicyNetwork(obs_dim, act_dim, seed, hidden_size)
-        self.ddpg_q_net = DDPGQNetwork(obs_dim, act_dim, seed, hidden_size)
+        self.policy_net = PolicyNetwork(obs_dim, act_dim, seed, hidden_size).to(device)
+        self.ddpg_q_net = DDPGQNetwork(obs_dim, act_dim, seed, hidden_size).to(device)
 
         # Define optimizers for policy network and Q-network
         self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.002, weight_decay=0.0001)
@@ -50,6 +51,11 @@ class DDPG:
         
         # Sample a batch of experiences
         states, actions, rewards, next_states, dones = self.replay_buffer.sample()
+        states = states.to(device)
+        actions = actions.to(device)
+        rewards = rewards.to(device)
+        next_states = next_states.to(device)
+        dones = dones.to(device)
         
         # Convert actions to one-hot encoded format
         actions_one_hot = torch.zeros(actions.size(0), self.act_dim)
