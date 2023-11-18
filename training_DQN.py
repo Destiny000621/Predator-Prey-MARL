@@ -15,7 +15,7 @@ dqn_agent_predator_2 = DQNAgent(state_size=env.observation_space("predator_2").s
 dqn_agent_prey_0 = DQNAgent(state_size=env.observation_space("prey_0").shape[0], action_size=env.action_space("prey_0").n, seed=40)
 
 # Initialize wandb
-wandb.init(project='MAPP_version1', name='DQN')
+wandb.init(project='MAPP_version2', name='DQN')
 
 # Define the number of episodes and epsilon for exploration
 NUM_EPISODES = 15000

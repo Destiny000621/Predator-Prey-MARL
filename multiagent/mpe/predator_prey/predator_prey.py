@@ -131,13 +131,13 @@ class Scenario(BaseScenario):
     def agent_reward(self, agent, world):
         # Agents are negatively rewarded if caught by predators
         rew = 0
-        shape = False
+        shape = True
         predators = self.predators(world)
         if (
             shape
         ):  # reward can optionally be shaped (increased reward for increased distance from predators)
             for adv in predators:
-                rew += 0.2 * np.sqrt(
+                rew += 0.1 * np.sqrt(
                     np.sum(np.square(agent.state.p_pos - adv.state.p_pos))
                 )
         if agent.collide:
@@ -145,7 +145,7 @@ class Scenario(BaseScenario):
                 if self.is_collision(a, agent):
                     rew -= 10
 
-        '''
+        
         # agents are penalized for exiting the screen, so that they can be caught by the predators
         def bound(x):
             if x < 0.9:
@@ -157,20 +157,20 @@ class Scenario(BaseScenario):
         for p in range(world.dim_p):
             x = abs(agent.state.p_pos[p])
             rew -= bound(x)
-        '''
+        
         return rew
 
     def predator_reward(self, agent, world):
         # predators are rewarded for collisions with agents
         rew = 0
-        shape = False
+        shape = True
         agents = self.prey_agents(world)
         predators = self.predators(world)
         if (
             shape
         ):  # reward can optionally be shaped (decreased reward for increased distance from agents)
             for adv in predators:
-                rew -= 0.2 * min(
+                rew -= 0.1 * min(
                     np.sqrt(np.sum(np.square(a.state.p_pos - adv.state.p_pos)))
                     for a in agents
                 )
@@ -179,7 +179,7 @@ class Scenario(BaseScenario):
                 for adv in predators:
                     if self.is_collision(ag, adv):
                         rew += 10
-        '''
+        
         def bound(x):
             if x < 0.9:
                 return 0
@@ -190,7 +190,6 @@ class Scenario(BaseScenario):
         for p in range(world.dim_p):
             x = abs(agent.state.p_pos[p])
             rew -= bound(x)
-        '''
 
         return rew
 
