@@ -4,7 +4,6 @@ from multiagent.mpe.predator_prey import predator_prey
 from multiagent.mpe._mpe_utils.simple_env import SimpleEnv
 import numpy as np
 
-
 save_dir = 'DQN_models'
 
 env = predator_prey.parallel_env(render_mode="rgb_array", max_cycles=25)
@@ -32,6 +31,7 @@ load_dqn(dqn_agent_prey_0, 'dqn_agent_prey_0', save_dir)
 # load_ddpg(ddpg_agent_predator_2, 'ddpg_agent_predator_2', save_dir)
 # load_ddpg(ddpg_agent_prey_0, 'ddpg_agent_prey_0', save_dir)
 
+eps = 0.005
 def evaluate_model(num_episodes=10):
     total_rewards = []
 
@@ -53,13 +53,13 @@ def evaluate_model(num_episodes=10):
                 #     actions[agent] = ddpg_agent_prey_0.act(obs)
 
                 if "predator_0" in agent:
-                    actions[agent] = dqn_agent_predator_0.act(obs)
+                    actions[agent] = dqn_agent_predator_0.act(obs, eps)
                 elif "predator_1" in agent:
-                    actions[agent] = dqn_agent_predator_1.act(obs)
+                    actions[agent] = dqn_agent_predator_1.act(obs, eps)
                 elif "predator_2" in agent:
-                    actions[agent] = dqn_agent_predator_2.act(obs)
+                    actions[agent] = dqn_agent_predator_2.act(obs, eps)
                 else:
-                    actions[agent] = dqn_agent_prey_0.act(obs)
+                    actions[agent] = dqn_agent_prey_0.act(obs, eps)
 
             # Take the chosen actions and observe the next state and rewards
             next_observations, rewards, infos, done, _ = env.step(actions)
@@ -67,9 +67,10 @@ def evaluate_model(num_episodes=10):
 
             episode_rewards.append(sum(rewards.values()))
             observations = next_observations
-        SimpleEnv.display_frames_as_gif(frames,episode)
+        #SimpleEnv.display_frames_as_gif(frames,episode)
 
-        total_rewards.append(episode_rewards)
+        mean_one_episode_reward = sum(episode_rewards)/len(episode_rewards)
+        total_rewards.append(mean_one_episode_reward)
 
     avg_reward = np.mean(total_rewards)
     print(f'Average Reward over {num_episodes} episodes: {avg_reward}')
