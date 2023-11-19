@@ -2,6 +2,8 @@ import torch
 import torch.nn.functional as F
 from utils.network import PolicyNetwork, MADDPGQNetwork
 from utils.ReplayBuffer import ReplayBuffer
+import random
+import numpy as np
 
 # Device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -31,17 +33,25 @@ class MADDPG:
             self.target_predator_policy_nets[i].load_state_dict(self.predator_policy_nets[i].state_dict())
         self.target_predator_q_net.load_state_dict(self.predator_q_net.state_dict())
         
-    def act(self, observations):
-        """Choose actions for all predators based on their policies."""
+    def act(self, observations, epsilon=0.05):
+        """Choose actions for all predators."""
         actions = []
         with torch.no_grad():
             for i, obs in enumerate(observations):
                 #action_probs = self.predator_policy_nets[i](torch.tensor(obs, dtype=torch.float32))
                 #action = action_probs.argmax().item()
                 #actions.append(action)
-                action_logits = self.predator_policy_nets[i](torch.tensor(obs, dtype=torch.float32))
-                action_probs = F.softmax(action_logits, dim=-1) # Convert logits to probabilities
-                action = torch.multinomial(action_probs, 1).item() # Sample an action from the probability distribution
+                #action_logits = self.predator_policy_nets[i](torch.tensor(obs, dtype=torch.float32))
+                #action_probs = F.softmax(action_logits, dim=-1) # Convert logits to probabilities
+                #action = torch.multinomial(action_probs, 1).item() # Sample an action from the probability distribution
+                #actions.append(action)
+                if random.random() < epsilon:
+                    # Exploration: choose a random action
+                    action = random.choice(np.arange(self.act_dim))
+                else:
+                    # Exploitation: choose the best action according to the policy
+                    action_probs = self.predator_policy_nets[i](torch.tensor(obs, dtype=torch.float32))
+                    action = action_probs.argmax().item()
                 actions.append(action)
         return actions
     

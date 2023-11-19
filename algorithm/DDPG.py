@@ -2,6 +2,8 @@ import torch
 import torch.nn.functional as F
 from utils.network import PolicyNetwork, DDPGQNetwork
 from utils.ReplayBuffer_DDPG import ReplayBuffer_DDPG
+import random
+import numpy as np
 
 # Device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -29,14 +31,21 @@ class DDPG:
         self.target_policy_net.load_state_dict(self.policy_net.state_dict())
         self.target_ddpg_q_net.load_state_dict(self.ddpg_q_net.state_dict())
         
-    def act(self, observation):
-        """Choose an action based on the policy."""
+    def act(self, observation, epsilon=0.05):
+        """Choose an action."""
         with torch.no_grad():
             #action_probs = self.policy_net(torch.tensor(observation, dtype=torch.float32))
             #action = action_probs.argmax().item()
-            action_logits = self.policy_net(torch.tensor(observation, dtype=torch.float32))
-            action_probs = F.softmax(action_logits, dim=-1) # Convert logits to probabilities
-            action = torch.multinomial(action_probs, 1).item() # Sample an action from the probability distribution
+            #action_logits = self.policy_net(torch.tensor(observation, dtype=torch.float32))
+            #action_probs = F.softmax(action_logits, dim=-1) # Convert logits to probabilities
+            #action = torch.multinomial(action_probs, 1).item() # Sample an action from the probability distribution
+            if random.random() < epsilon:
+                # Exploration: choose a random action
+                action = random.choice(np.arange(self.act_dim))
+            else:
+                # Exploitation: choose the best action according to the policy
+                action_probs = self.policy_net(torch.tensor(observation, dtype=torch.float32))
+                action = action_probs.argmax().item()
         return action
     
     def store_experience(self, state, action, reward, next_state, done):
