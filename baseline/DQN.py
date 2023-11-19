@@ -12,7 +12,7 @@ BUFFER_SIZE = 100000    # replay buffer size
 BATCH_SIZE = 64           # minibatch size
 GAMMA = 0.99              # discount factor
 TAU = 0.001                # for soft update of target parameters
-UPDATE_EVERY = 5          # how often to update the network
+UPDATE_EVERY = 1          # how often to update the network
 HIDDEN_SIZE = 128         # hidden layer size
 
 # Device
@@ -24,15 +24,17 @@ class QNetwork(nn.Module):
         self.seed = torch.manual_seed(seed)
         self.fc1 = nn.Linear(input_dim, HIDDEN_SIZE)
         self.fc2 = nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE)
-        self.fc3 = nn.Linear(HIDDEN_SIZE, output_dim)
+        self.fc3 = nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE)
+        self.fc4 = nn.Linear(HIDDEN_SIZE, output_dim)
 
     def forward(self, x):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        return self.fc3(x)
+        x = F.relu(self.fc3(x))
+        return self.fc4(x)
 
 class ReplayBuffer_DQN:
-    def __init__(self, action_size, buffer_size, batch_size, seed, capacity):
+    def __init__(self, action_size, buffer_size, batch_size, seed, capacity, alpha=0.6):
         self.action_size = action_size
         self.memory = deque(maxlen=buffer_size)
         self.batch_size = batch_size
@@ -40,6 +42,9 @@ class ReplayBuffer_DQN:
         self.seed = random.seed(seed)
         self.capacity = capacity
         self.buffer = deque(maxlen=capacity)
+        self.alpha = alpha  # degree of prioritization, 0 for uniform, 1 for fully prioritized
+        self.priorities = np.zeros((buffer_size,), dtype=np.float32)
+        self.pos = 0  # Initialize the position attribute
 
     def __len__(self):
         return len(self.buffer) 
@@ -47,9 +52,23 @@ class ReplayBuffer_DQN:
     def add(self, state, action, reward, next_state, done):
         e = self.experience(state, action, reward, next_state, done)
         self.memory.append(e)
+        max_priority = self.priorities.max() if self.memory else 1.0
+        self.priorities[self.pos] = max_priority
+        self.pos = (self.pos + 1) % self.capacity  # Update the position
     
     def sample(self):
-        experiences = random.sample(self.memory, k=self.batch_size)
+        # Proportional sampling based on TD error
+        if len(self.memory) == self.memory.maxlen:
+            priorities = self.priorities
+        else:
+            priorities = self.priorities[:self.pos]
+
+        probabilities = priorities ** self.alpha
+        probabilities /= probabilities.sum()
+
+        indices = np.random.choice(len(self.memory), self.batch_size, p=probabilities)
+        experiences = [self.memory[i] for i in indices]
+        #experiences = random.sample(self.memory, k=self.batch_size)
 
         states = torch.from_numpy(np.vstack([e.state for e in experiences if e is not None])).float().to(device)
         actions = torch.from_numpy(np.vstack([e.action for e in experiences if e is not None])).long().to(device)
@@ -57,7 +76,12 @@ class ReplayBuffer_DQN:
         next_states = torch.from_numpy(np.vstack([e.next_state for e in experiences if e is not None])).float().to(device)
         dones = torch.from_numpy(np.vstack([e.done for e in experiences if e is not None]).astype(np.uint8)).float().to(device)
         
-        return (states, actions, rewards, next_states, dones)
+        #return (states, actions, rewards, next_states, dones)
+        return (states, actions, rewards, next_states, dones), indices
+    
+    def update_priorities(self, indices, errors):
+        for i, error in zip(indices, errors):
+            self.priorities[i] = error + 1e-5  # Avoid zero probability
 
 class DQNAgent:
     def __init__(self, state_size, action_size, seed, hidden_size=HIDDEN_SIZE):
@@ -68,9 +92,9 @@ class DQNAgent:
         
         self.qnetwork_local = QNetwork(state_size, action_size, seed, hidden_size).to(device)
         self.qnetwork_target = QNetwork(state_size, action_size, seed, hidden_size).to(device)
-        self.optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=LR)
+        self.optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=LR, weight_decay=0.0001)
         
-        self.memory = ReplayBuffer_DQN(action_size, BUFFER_SIZE, BATCH_SIZE, seed, capacity=10000)
+        self.memory = ReplayBuffer_DQN(action_size, BUFFER_SIZE, BATCH_SIZE, seed, capacity=100000)
         self.t_step = 0
     
     def step(self, state, action, reward, next_state, done):
@@ -82,7 +106,7 @@ class DQNAgent:
                 experiences = self.memory.sample()
                 self.learn(experiences, GAMMA)
 
-    def act(self, state, eps=0.):
+    def act(self, state, eps):
         state = torch.from_numpy(state).float().unsqueeze(0).to(device)
         self.qnetwork_local.eval()
         with torch.no_grad():
