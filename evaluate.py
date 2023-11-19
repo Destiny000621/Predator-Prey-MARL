@@ -38,7 +38,7 @@ load_ddpg(ddpg_agent_predator_1, 'ddpg_agent_predator_1', save_dir)
 load_ddpg(ddpg_agent_predator_2, 'ddpg_agent_predator_2', save_dir)
 load_ddpg(ddpg_agent_prey_0, 'ddpg_agent_prey_0', save_dir)
 
-def evaluate_model(num_episodes=10, save_gif_path=None):
+def evaluate_model(num_episodes=10):
     total_rewards = []
 
     for episode in range(num_episodes):
@@ -70,10 +70,8 @@ def evaluate_model(num_episodes=10, save_gif_path=None):
     avg_reward = np.mean(total_rewards)
     print(f'Average Reward over {num_episodes} episodes: {avg_reward}')
 
-    if save_gif_path:
-        imageio.mimsave(save_gif_path, frames, duration=0.1)
+    imageio.mimsave('/evaluation.gif', frames, duration=0.1)
 
-gif_path = '/evaluation.gif'
 
 # Call the evaluation function
 evaluate_model(num_episodes=10)
