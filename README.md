@@ -35,7 +35,7 @@ python evaluation.py
 
 |  Environment Name  | training result                         |
 |  ----  |------------------------------------------------------|
-| MAPP  | ![MAPP](rewards_comprison.jpg) |
+| MAPP  | ![MAPP]() |
 
 
 ### References

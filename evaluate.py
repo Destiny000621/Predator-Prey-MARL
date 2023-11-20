@@ -26,6 +26,11 @@ load_ddpg(ddpg_agent, 'ddpg_agent', save_dir)
 # Initialize wandb
 wandb.init(project='MAPP_evaluate', name='MADDPG')
 
+# Set a folder to save the gifs
+gif_dir = 'MADDPG_gifs'
+if not os.path.exists(gif_dir):
+    os.makedirs(gif_dir)
+
 def evaluate_model(num_episodes):
     total_rewards = []
 
@@ -61,7 +66,7 @@ def evaluate_model(num_episodes):
             observations = next_observations
 
         if episode % 20 == 0:
-            SimpleEnv.display_frames_as_gif(frames,episode)
+            SimpleEnv.display_frames_as_gif(frames, episode, gif_dir)
 
         mean_one_episode_reward = sum(episode_rewards)/len(episode_rewards)
         total_rewards.append(mean_one_episode_reward)
