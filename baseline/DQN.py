@@ -114,7 +114,7 @@ class DQNAgent:
         self.qnetwork_local.train()
 
         if random.random() > eps:
-            return np.argmax(action_values.cpu().data.numpy())
+            return np.argmax(action_values).item()
         else:
             return random.choice(np.arange(self.action_size))
 

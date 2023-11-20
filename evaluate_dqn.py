@@ -3,16 +3,17 @@ from baseline.DQN import DQNAgent
 from multiagent.mpe.predator_prey import predator_prey
 from multiagent.mpe._mpe_utils.simple_env import SimpleEnv
 import numpy as np
+import wandb
 
 save_dir = 'DQN_models'
 
 env = predator_prey.parallel_env(render_mode="rgb_array", max_cycles=25)
 observations, infos = env.reset()
 
-dqn_agent_predator_0 = DQNAgent(state_size=env.observation_space("predator_0").shape[0], action_size=env.action_space("predator_0").n, seed=1)
-dqn_agent_predator_1 = DQNAgent(state_size=env.observation_space("predator_1").shape[0], action_size=env.action_space("predator_1").n, seed=1)
-dqn_agent_predator_2 = DQNAgent(state_size=env.observation_space("predator_2").shape[0], action_size=env.action_space("predator_2").n, seed=1)
-dqn_agent_prey_0 = DQNAgent(state_size=env.observation_space("prey_0").shape[0], action_size=env.action_space("prey_0").n, seed=1)
+dqn_agent_predator_0 = DQNAgent(state_size=env.observation_space("predator_0").shape[0], action_size=env.action_space("predator_0").n, seed=11)
+dqn_agent_predator_1 = DQNAgent(state_size=env.observation_space("predator_1").shape[0], action_size=env.action_space("predator_1").n, seed=22)
+dqn_agent_predator_2 = DQNAgent(state_size=env.observation_space("predator_2").shape[0], action_size=env.action_space("predator_2").n, seed=33)
+dqn_agent_prey_0 = DQNAgent(state_size=env.observation_space("prey_0").shape[0], action_size=env.action_space("prey_0").n, seed=44)
 
 # Load the models for each agent
 load_dqn(dqn_agent_predator_0, 'dqn_agent_predator_0', save_dir)
@@ -20,19 +21,11 @@ load_dqn(dqn_agent_predator_1, 'dqn_agent_predator_1', save_dir)
 load_dqn(dqn_agent_predator_2, 'dqn_agent_predator_2', save_dir)
 load_dqn(dqn_agent_prey_0, 'dqn_agent_prey_0', save_dir)
 
-# ddpg_agent_predator_0 = DDPG(obs_dim=env.observation_space("predator_0").shape[0], act_dim=env.action_space("predator_0").n, hidden_size=128, seed=10)
-# ddpg_agent_predator_1 = DDPG(obs_dim=env.observation_space("predator_1").shape[0], act_dim=env.action_space("predator_1").n, hidden_size=128, seed=20)
-# ddpg_agent_predator_2 = DDPG(obs_dim=env.observation_space("predator_2").shape[0], act_dim=env.action_space("predator_2").n, hidden_size=128, seed=30)
-# ddpg_agent_prey_0 = DDPG(obs_dim=env.observation_space("prey_0").shape[0], act_dim=env.action_space("prey_0").n, hidden_size=128, seed=40)
+# Initialize wandb
+wandb.init(project='MAPP_evaluate', name='DQN')
 
-# Load the models for each agent
-# load_ddpg(ddpg_agent_predator_0, 'ddpg_agent_predator_0', save_dir)
-# load_ddpg(ddpg_agent_predator_1, 'ddpg_agent_predator_1', save_dir)
-# load_ddpg(ddpg_agent_predator_2, 'ddpg_agent_predator_2', save_dir)
-# load_ddpg(ddpg_agent_prey_0, 'ddpg_agent_prey_0', save_dir)
-
-eps = 0.005
-def evaluate_model(num_episodes=10):
+eps = 0.01
+def evaluate_model(num_episodes):
     total_rewards = []
 
     for episode in range(num_episodes):
@@ -43,15 +36,6 @@ def evaluate_model(num_episodes=10):
             actions = {}
             # actions = act(obs)
             for agent, obs in observations.items():
-                # if "predator_0" in agent:
-                #     actions[agent] = ddpg_agent_predator_0.act(obs)
-                # elif "predator_1" in agent:
-                #     actions[agent] = ddpg_agent_predator_1.act(obs)
-                # elif "predator_2" in agent:
-                #     actions[agent] = ddpg_agent_predator_2.act(obs)
-                # else:
-                #     actions[agent] = ddpg_agent_prey_0.act(obs)
-
                 if "predator_0" in agent:
                     actions[agent] = dqn_agent_predator_0.act(obs, eps)
                 elif "predator_1" in agent:
@@ -62,24 +46,40 @@ def evaluate_model(num_episodes=10):
                     actions[agent] = dqn_agent_prey_0.act(obs, eps)
 
             # Take the chosen actions and observe the next state and rewards
-            next_observations, rewards, infos, done, _ = env.step(actions)
             frames.append(env.render())
+            next_observations, rewards, terminations, truncations, infos = env.step(actions)
+            # Store experiences and update
+            for agent, obs in observations.items():
+                action = actions[agent]
+                reward = rewards[agent]
+                next_obs = next_observations[agent]
+                done = terminations[agent]
+
+                if "predator_0" in agent:
+                    dqn_agent_predator_0.step(obs, action, reward, next_obs, done)
+                elif "predator_1" in agent:
+                    dqn_agent_predator_1.step(obs, action, reward, next_obs, done)
+                elif "predator_2" in agent:
+                    dqn_agent_predator_2.step(obs, action, reward, next_obs, done)
+                else:
+                    dqn_agent_prey_0.step(obs, action, reward, next_obs, done)
 
             episode_rewards.append(sum(rewards.values()))
             observations = next_observations
-            if episode % 10 == 0:
-                SimpleEnv.display_frames_as_gif(frames, episode)
 
-            mean_one_episode_reward = sum(episode_rewards) / len(episode_rewards)
-            total_rewards.append(mean_one_episode_reward)
+        if episode % 20 == 0:
+            SimpleEnv.display_frames_as_gif(frames, episode)
 
-            wandb.log({
-                "Episode Reward": sum(episode_rewards)
-            })
+        mean_one_episode_reward = sum(episode_rewards) / len(episode_rewards)
+        total_rewards.append(mean_one_episode_reward)
 
-        avg_reward = np.mean(total_rewards)
-        print(f'Average Reward over {num_episodes} episodes: {avg_reward}')
-        wandb.finish()
+        wandb.log({
+            "Mean Episode Reward": mean_one_episode_reward
+        })
 
-    evaluate_model(num_episodes=100)
-    env.close()
+    avg_reward = np.mean(total_rewards)
+    print(f'Average Reward over {num_episodes} episodes: {avg_reward}')
+    wandb.finish()
+
+evaluate_model(num_episodes=200)
+env.close()

@@ -55,7 +55,7 @@ def evaluate_model(num_episodes):
         total_rewards.append(mean_one_episode_reward)
 
         wandb.log({
-            "Episode Reward": sum(episode_rewards)
+            "Mean Episode Reward": mean_one_episode_reward
         })
 
     avg_reward = np.mean(total_rewards)
