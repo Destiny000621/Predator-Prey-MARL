@@ -3,6 +3,7 @@ from baseline.DQN import DQNAgent
 from multiagent.mpe.predator_prey import predator_prey
 from multiagent.mpe._mpe_utils.simple_env import SimpleEnv
 import numpy as np
+import wandb
 
 save_dir = 'DQN_models'
 
@@ -34,6 +35,8 @@ load_dqn(dqn_agent_prey_0, 'dqn_agent_prey_0', save_dir)
 eps = 0.005
 def evaluate_model(num_episodes=10):
     total_rewards = []
+
+    wandb.init(project='MAPP_evaluate', name='DQN')
 
     for episode in range(num_episodes):
         episode_rewards = []
