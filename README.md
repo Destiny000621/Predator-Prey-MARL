@@ -11,11 +11,9 @@ conda activate pp_env
 pip install -r requirements.txt
 ```
 
-### How to Train the Agents
+### How to Train Agents
 
-Execute the following command to train the agents:
-
-MADDPG for Predators and DDPG for Prey
+Execute the following command to train the agents: (MADDPG for Predators and DDPG for Prey)
 
 ```bash
 wandb login
@@ -23,12 +21,21 @@ python training_MADDPG.py
 ```
 
 Provide your wandb API key when prompted. (Get one from https://wandb.com)
+Our full-trained MADDPG models are saved in the `./MADDPG_DDPG_models` directory.
+
+### How to Evaluate the Performances of Agents
+
+Execute the following command to evaluate the performances of agents:
+
+```bash
+python evaluation.py
+```
 
 ### Results
 
-|  environment name   | training result                         |
+|  Environment Name  | training result                         |
 |  ----  |------------------------------------------------------|
-| MAPP  | ![MAPP](rewards_comprison.jpg) |
+| MAPP  | ![MAPP]() |
 
 
 ### References
@@ -36,3 +43,7 @@ Provide your wandb API key when prompted. (Get one from https://wandb.com)
 - [PettingZoo-MPE](https://github.com/Farama-Foundation/PettingZoo)
 - [MADDPG](http://arxiv.org/abs/1706.02275)
 - [DDPG](http://arxiv.org/abs/1509.02971)
+- [MPE](https://github.com/shariqiqbal2810/multiagent-particle-envs)
+- [OpenAI-MPE](https://github.com/openai/multiagent-particle-envs)
+- [OpenAI-MADDPG]https://github.com/openai/maddpg
+- https://github.com/shariqiqbal2810/maddpg-pytorch

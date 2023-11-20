@@ -4,6 +4,7 @@ from multiagent.mpe.predator_prey import predator_prey
 from multiagent.mpe._mpe_utils.simple_env import SimpleEnv
 import numpy as np
 import wandb
+import os
 
 save_dir = 'DDPG_DDPG_models'
 
@@ -20,6 +21,11 @@ load_ddpg(ddpg_agent_predator_0, 'ddpg_agent_predator_0', save_dir)
 load_ddpg(ddpg_agent_predator_1, 'ddpg_agent_predator_1', save_dir)
 load_ddpg(ddpg_agent_predator_2, 'ddpg_agent_predator_2', save_dir)
 load_ddpg(ddpg_agent_prey_0, 'ddpg_agent_prey_0', save_dir)
+
+# Set a folder to save the gifs
+gif_dir = 'DDPG_gifs'
+if not os.path.exists(gif_dir):
+    os.makedirs(gif_dir)
 
 def evaluate_model(num_episodes):
     total_rewards = []
@@ -66,7 +72,7 @@ def evaluate_model(num_episodes):
             observations = next_observations
 
         if episode % 10 == 0:
-            SimpleEnv.display_frames_as_gif(frames,episode)
+            SimpleEnv.display_frames_as_gif(frames, episode, gif_dir)
 
         mean_one_episode_reward = sum(episode_rewards)/len(episode_rewards)
         total_rewards.append(mean_one_episode_reward)
