@@ -67,17 +67,19 @@ def evaluate_model(num_episodes=10):
 
             episode_rewards.append(sum(rewards.values()))
             observations = next_observations
-        #SimpleEnv.display_frames_as_gif(frames,episode)
+            if episode % 10 == 0:
+                SimpleEnv.display_frames_as_gif(frames, episode)
 
-        mean_one_episode_reward = sum(episode_rewards)/len(episode_rewards)
-        total_rewards.append(mean_one_episode_reward)
+            mean_one_episode_reward = sum(episode_rewards) / len(episode_rewards)
+            total_rewards.append(mean_one_episode_reward)
 
-    avg_reward = np.mean(total_rewards)
-    print(f'Average Reward over {num_episodes} episodes: {avg_reward}')
+            wandb.log({
+                "Episode Reward": sum(episode_rewards)
+            })
 
-    # if save_gif_path:
-    #     imageio.mimsave(save_gif_path, frames, duration=0.1)
+        avg_reward = np.mean(total_rewards)
+        print(f'Average Reward over {num_episodes} episodes: {avg_reward}')
+        wandb.finish()
 
-# gif_path = '/evaluation.gif'
-evaluate_model(num_episodes=10)
-env.close()
+    evaluate_model(num_episodes=100)
+    env.close()
