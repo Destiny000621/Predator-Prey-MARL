@@ -4,6 +4,7 @@ from multiagent.mpe.predator_prey import predator_prey
 from multiagent.mpe._mpe_utils.simple_env import SimpleEnv
 import numpy as np
 import wandb
+import wandb
 
 save_dir = 'DQN_models'
 
@@ -27,6 +28,8 @@ wandb.init(project='MAPP_evaluate', name='DQN')
 eps = 0.01
 def evaluate_model(num_episodes):
     total_rewards = []
+
+    wandb.init(project='MAPP_evaluate', name='DQN')
 
     for episode in range(num_episodes):
         episode_rewards = []
@@ -70,6 +73,8 @@ def evaluate_model(num_episodes):
         if episode % 20 == 0:
             SimpleEnv.display_frames_as_gif(frames, episode)
 
+        mean_one_episode_reward = sum(episode_rewards) / len(episode_rewards)
+        total_rewards.append(mean_one_episode_reward)
         mean_one_episode_reward = sum(episode_rewards) / len(episode_rewards)
         total_rewards.append(mean_one_episode_reward)
 
