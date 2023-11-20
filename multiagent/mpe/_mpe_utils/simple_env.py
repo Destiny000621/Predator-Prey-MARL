@@ -284,7 +284,7 @@ class SimpleEnv(AECEnv):
             pygame.quit()
             self.screen = None
 
-    def display_frames_as_gif(frames):
+    def display_frames_as_gif(frames,episode):
         patch = plt.imshow(frames[0])
         plt.axis('off')
 
@@ -292,4 +292,4 @@ class SimpleEnv(AECEnv):
             patch.set_data(frames[i])
 
         anim = animation.FuncAnimation(plt.gcf(), animate, frames=len(frames), interval=1)
-        anim.save('./predator_prey.gif', writer='ffmpeg', fps=30)
+        anim.save(f'./predator_prey_{episode}.gif', writer='ffmpeg', fps=30)
