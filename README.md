@@ -33,9 +33,10 @@ python evaluation.py
 
 ### Results
 
-|  Environment Name  | training result                         |
-|  ----  |------------------------------------------------------|
-| MAPP  | ![MAPP]() |
+| training algorithm | training result                                        |
+|------------------|--------------------------------------------------------|
+| DDPG-DDPG        | <img src="evaluate/DDPG_evaluate.gif" width="500"/>    |
+| MADDPG-DDPG      | <img src="evaluate/MADDPG_evaluate.gif" width="500"/>  |
 
 
 ### References
