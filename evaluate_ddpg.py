@@ -43,11 +43,28 @@ def evaluate_model(num_episodes):
                     actions[agent] = ddpg_agent_prey_0.act(obs)
 
             # Take the chosen actions and observe the next state and rewards
-            next_observations, rewards, infos, done, _ = env.step(actions)
+            next_observations, rewards, terminations, infos, _ = env.step(actions)
+
+            # Store experiences and update
+            for agent, obs in observations.items():
+                reward = rewards[agent]
+                next_obs = next_observations[agent]
+                done = terminations[agent]
+
+                if "predator_0" in agent:
+                    ddpg_agent_predator_0.store_experience(obs, actions[agent], reward, next_obs, done)
+                elif "predator_1" in agent:
+                    ddpg_agent_predator_1.store_experience(obs, actions[agent], reward, next_obs, done)
+                elif "predator_2" in agent:
+                    ddpg_agent_predator_2.store_experience(obs, actions[agent], reward, next_obs, done)
+                else:
+                    ddpg_agent_prey_0.store_experience(obs, actions[agent], reward, next_obs, done)
+
             frames.append(env.render())
 
             episode_rewards.append(sum(rewards.values()))
             observations = next_observations
+
         if episode % 10 == 0:
             SimpleEnv.display_frames_as_gif(frames,episode)
 
@@ -55,12 +72,12 @@ def evaluate_model(num_episodes):
         total_rewards.append(mean_one_episode_reward)
 
         wandb.log({
-            "Episode Reward": sum(episode_rewards)
+            "Mean Episode Reward": mean_one_episode_reward
         })
 
     avg_reward = np.mean(total_rewards)
     print(f'Average Reward over {num_episodes} episodes: {avg_reward}')
     wandb.finish()
 
-evaluate_model(num_episodes=100)
+evaluate_model(num_episodes=200)
 env.close()
