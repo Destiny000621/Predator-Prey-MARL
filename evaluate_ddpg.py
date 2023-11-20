@@ -3,6 +3,7 @@ from algorithm.DDPG import DDPG
 from multiagent.mpe.predator_prey import predator_prey
 from multiagent.mpe._mpe_utils.simple_env import SimpleEnv
 import numpy as np
+import wandb
 
 save_dir = 'DDPG_DDPG_models'
 
@@ -20,8 +21,10 @@ load_ddpg(ddpg_agent_predator_1, 'ddpg_agent_predator_1', save_dir)
 load_ddpg(ddpg_agent_predator_2, 'ddpg_agent_predator_2', save_dir)
 load_ddpg(ddpg_agent_prey_0, 'ddpg_agent_prey_0', save_dir)
 
-def evaluate_model(num_episodes=10):
+def evaluate_model(num_episodes):
     total_rewards = []
+
+    wandb.init(project='MAPP_version3', name='DDPG-evaluate')
 
     for episode in range(num_episodes):
         episode_rewards = []
@@ -45,13 +48,19 @@ def evaluate_model(num_episodes=10):
 
             episode_rewards.append(sum(rewards.values()))
             observations = next_observations
-        SimpleEnv.display_frames_as_gif(frames,episode)
+        if episode % 10 == 0:
+            SimpleEnv.display_frames_as_gif(frames,episode)
 
         mean_one_episode_reward = sum(episode_rewards)/len(episode_rewards)
         total_rewards.append(mean_one_episode_reward)
 
+        wandb.log({
+            "Episode Reward": sum(episode_rewards)
+        })
+
     avg_reward = np.mean(total_rewards)
     print(f'Average Reward over {num_episodes} episodes: {avg_reward}')
+    wandb.finish()
 
-evaluate_model(num_episodes=10)
+evaluate_model(num_episodes=100)
 env.close()
