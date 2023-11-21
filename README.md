@@ -30,10 +30,11 @@ Execute the following command to evaluate the performances of agents:
 ```bash
 python evaluation.py
 ```
+The gifs of MADDPG models in the evaluation will be saved in the `./MADDPG_gifs` directory.
 
 ### Results
 
-| training algorithm | training result                                        |
+| training algorithm | evaluation results                                        |
 |------------------|--------------------------------------------------------|
 | DDPG-DDPG        | <img src="evaluate/DDPG_evaluate.gif" width="500"/>    |
 | MADDPG-DDPG      | <img src="evaluate/MADDPG_evaluate.gif" width="500"/>  |
