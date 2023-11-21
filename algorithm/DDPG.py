@@ -9,19 +9,20 @@ import numpy as np
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class DDPG:
-    def __init__(self, obs_dim, act_dim, hidden_size, seed, buffer_size=10000, batch_size=64):
+    def __init__(self, obs_dim, act_dim, hidden_size, seed, buffer_size=10000, batch_size=64, LR=0.001):
         self.act_dim = act_dim
         self.seed = seed
         self.hidden_size = hidden_size
         self.replay_buffer = ReplayBuffer_DDPG(buffer_size, batch_size)
+        self.LR = LR
         
         # Define policy(actor) and Q-networks(critic)
         self.policy_net = PolicyNetwork(obs_dim, act_dim, seed, hidden_size).to(device)
         self.ddpg_q_net = DDPGQNetwork(obs_dim, act_dim, seed, hidden_size).to(device)
 
         # Define optimizers for policy network and Q-network
-        self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.002, weight_decay=0.0001)
-        self.ddpg_q_optimizer = torch.optim.Adam(self.ddpg_q_net.parameters(), lr=0.002, weight_decay=0.0001)
+        self.policy_optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=LR, weight_decay=0.0001)
+        self.ddpg_q_optimizer = torch.optim.Adam(self.ddpg_q_net.parameters(), lr=LR, weight_decay=0.0001)
 
         # Define target networks
         self.target_policy_net = PolicyNetwork(obs_dim, act_dim, seed, hidden_size)
@@ -34,11 +35,6 @@ class DDPG:
     def act(self, observation, epsilon=0.05):
         """Choose an action."""
         with torch.no_grad():
-            #action_probs = self.policy_net(torch.tensor(observation, dtype=torch.float32))
-            #action = action_probs.argmax().item()
-            #action_logits = self.policy_net(torch.tensor(observation, dtype=torch.float32))
-            #action_probs = F.softmax(action_logits, dim=-1) # Convert logits to probabilities
-            #action = torch.multinomial(action_probs, 1).item() # Sample an action from the probability distribution
             if random.random() < epsilon:
                 # Exploration: choose a random action
                 action = random.choice(np.arange(self.act_dim))

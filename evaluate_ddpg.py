@@ -71,7 +71,7 @@ def evaluate_model(num_episodes):
             episode_rewards.append(sum(rewards.values()))
             observations = next_observations
 
-        if episode % 10 == 0:
+        if episode % 20 == 0:
             SimpleEnv.display_frames_as_gif(frames, episode, gif_dir)
 
         mean_one_episode_reward = sum(episode_rewards)/len(episode_rewards)
