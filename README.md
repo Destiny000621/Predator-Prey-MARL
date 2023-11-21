@@ -21,6 +21,7 @@ python training_MADDPG.py
 ```
 
 Provide your wandb API key when prompted. (Get one from https://wandb.com)
+
 Our full-trained MADDPG models are saved in the `./MADDPG_DDPG_models` directory.
 
 ### How to Evaluate the Performances of Agents
@@ -47,5 +48,5 @@ The gifs of MADDPG models in the evaluation will be saved in the `./MADDPG_gifs`
 - [DDPG](http://arxiv.org/abs/1509.02971)
 - [MPE](https://github.com/shariqiqbal2810/multiagent-particle-envs)
 - [OpenAI-MPE](https://github.com/openai/multiagent-particle-envs)
-- [OpenAI-MADDPG]https://github.com/openai/maddpg
+- [OpenAI-MADDPG](https://github.com/openai/maddpg)
 - https://github.com/shariqiqbal2810/maddpg-pytorch
