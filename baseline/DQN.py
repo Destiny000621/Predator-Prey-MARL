@@ -7,7 +7,7 @@ import random
 from collections import namedtuple, deque
 
 # Hyperparameters
-LR = 0.0001                 # learning rate
+LR = 0.001                 # learning rate
 BUFFER_SIZE = 100000    # replay buffer size
 BATCH_SIZE = 64           # minibatch size
 GAMMA = 0.99              # discount factor
