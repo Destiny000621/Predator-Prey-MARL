@@ -35,7 +35,11 @@ The gifs of MADDPG models in the evaluation will be saved in the `./MADDPG_gifs`
 
 ### Results
 
-| training algorithm | evaluation results                                        |
+| Environment Name | Training Results                                       |
+|------------------|--------------------------------------------------------|
+| MAPP        | <img src="rewards.png" width="1000"/>    |
+
+| Training Algorithm | Evaluation Results                                   |
 |------------------|--------------------------------------------------------|
 | DDPG-DDPG        | <img src="evaluate/DDPG_evaluate.gif" width="500"/>    |
 | MADDPG-DDPG      | <img src="evaluate/MADDPG_evaluate.gif" width="500"/>  |
