@@ -1,5 +1,5 @@
 # Predator-Prey-MARL
-PyTorch Implementation of MADDPG and DDPG in a Multi-Agents Predator-Prey(MAPP) environment.
+PyTorch Implementation of MADDPG and DDPG in a Multi-Agent Predator-Prey(MAPP) environment.
 
 ### Install Python Environment
 
